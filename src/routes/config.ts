@@ -13,6 +13,7 @@ import {
   getCustomOpenaiApiUrl,
   getCustomOpenaiApiKey,
   getCustomOpenaiModelName,
+  getChatbotApiUrl,
 } from '../config';
 import logger from '../utils/logger';
 
@@ -60,6 +61,7 @@ router.get('/', async (_, res) => {
     config['customOpenaiApiUrl'] = getCustomOpenaiApiUrl();
     config['customOpenaiApiKey'] = getCustomOpenaiApiKey();
     config['customOpenaiModelName'] = getCustomOpenaiModelName();
+    config['chatbotApiUrl'] = getChatbotApiUrl();
 
     res.status(200).json(config);
   } catch (err: any) {
@@ -92,6 +94,9 @@ router.post('/', async (req, res) => {
         API_URL: config.customOpenaiApiUrl,
         API_KEY: config.customOpenaiApiKey,
         MODEL_NAME: config.customOpenaiModelName,
+      },
+      CHATBOT: {
+        API_URL: config.chatbotApiUrl,
       },
     },
   };

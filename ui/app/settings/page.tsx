@@ -23,6 +23,7 @@ interface SettingsType {
   customOpenaiApiKey: string;
   customOpenaiApiUrl: string;
   customOpenaiModelName: string;
+  chatbotApiUrl: string;
 }
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -331,6 +332,8 @@ const Page = () => {
         localStorage.setItem('embeddingModelProvider', value);
       } else if (key === 'embeddingModel') {
         localStorage.setItem('embeddingModel', value);
+      } else if (key === 'chatbotApiUrl') {
+        localStorage.setItem('chatbotApiUrl', value);
       }
     } catch (err) {
       console.error('Failed to save:', err);
@@ -732,6 +735,25 @@ const Page = () => {
                       }));
                     }}
                     onSave={(value) => saveConfig('ollamaApiUrl', value)}
+                  />
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <p className="text-black/70 dark:text-white/70 text-sm">
+                    Chatbot API URL
+                  </p>
+                  <Input
+                    type="text"
+                    placeholder="Chatbot API URL"
+                    value={config.chatbotApiUrl}
+                    isSaving={savingStates['chatbotApiUrl']}
+                    onChange={(e) => {
+                      setConfig((prev) => ({
+                        ...prev!,
+                        chatbotApiUrl: e.target.value,
+                      }));
+                    }}
+                    onSave={(value) => saveConfig('chatbotApiUrl', value)}
                   />
                 </div>
 

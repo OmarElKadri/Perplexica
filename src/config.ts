@@ -31,6 +31,9 @@ interface Config {
       API_KEY: string;
       MODEL_NAME: string;
     };
+    CHATBOT: {
+      API_URL: string;
+    };
   };
   API_ENDPOINTS: {
     SEARXNG: string;
@@ -74,6 +77,8 @@ export const getCustomOpenaiApiUrl = () =>
 
 export const getCustomOpenaiModelName = () =>
   loadConfig().MODELS.CUSTOM_OPENAI.MODEL_NAME;
+
+export const getChatbotApiUrl = () => loadConfig().MODELS.CHATBOT.API_URL;
 
 const mergeConfigs = (current: any, update: any): any => {
   if (update === null || update === undefined) {
