@@ -23,5 +23,8 @@ MODEL_NAME = ""
 [MODELS.OLLAMA]
 API_URL = "" # Ollama API URL - http://host.docker.internal:11434
 
+[MODELS.CHATBOT]
+API_URL = ""
+
 [API_ENDPOINTS]
 SEARXNG = "http://localhost:32768" # SearxNG API URL
