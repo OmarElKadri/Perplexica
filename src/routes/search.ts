@@ -37,6 +37,7 @@ interface ChatRequestBody {
   embeddingModel?: embeddingModel;
   query: string;
   history: Array<[string, string]>;
+  stream?: boolean;
 }
 
 router.post('/', async (req, res) => {
@@ -49,6 +50,7 @@ router.post('/', async (req, res) => {
 
     body.history = body.history || [];
     body.optimizationMode = body.optimizationMode || 'balanced';
+    const streamResponse = body.stream === true;
 
     const history: BaseMessage[] = body.history.map((msg) => {
       if (msg[0] === 'human') {
@@ -129,26 +131,57 @@ router.post('/', async (req, res) => {
       [],
     );
 
-    let message = '';
-    let sources = [];
+    if (streamResponse) {
+      // Set headers for streaming
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      
+      let sources = [];
 
-    emitter.on('data', (data) => {
-      const parsedData = JSON.parse(data);
-      if (parsedData.type === 'response') {
-        message += parsedData.data;
-      } else if (parsedData.type === 'sources') {
-        sources = parsedData.data;
-      }
-    });
+      emitter.on('data', (data) => {
+        const parsedData = JSON.parse(data);
+        if (parsedData.type === 'response') {
+          res.write(`data: ${JSON.stringify({ type: 'response', content: parsedData.data })}\n\n`);
+        } else if (parsedData.type === 'sources') {
+          sources = parsedData.data;
+          res.write(`data: ${JSON.stringify({ type: 'sources', content: parsedData.data })}\n\n`);
+        }
+      });
 
-    emitter.on('end', () => {
-      res.status(200).json({ message, sources });
-    });
+      emitter.on('end', () => {
+        res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+        res.end();
+      });
 
-    emitter.on('error', (data) => {
-      const parsedData = JSON.parse(data);
-      res.status(500).json({ message: parsedData.data });
-    });
+      emitter.on('error', (data) => {
+        const parsedData = JSON.parse(data);
+        res.write(`data: ${JSON.stringify({ type: 'error', content: parsedData.data })}\n\n`);
+        res.end();
+      });
+    } else {
+      // Original non-streaming behavior
+      let message = '';
+      let sources = [];
+
+      emitter.on('data', (data) => {
+        const parsedData = JSON.parse(data);
+        if (parsedData.type === 'response') {
+          message += parsedData.data;
+        } else if (parsedData.type === 'sources') {
+          sources = parsedData.data;
+        }
+      });
+
+      emitter.on('end', () => {
+        res.status(200).json({ message, sources });
+      });
+
+      emitter.on('error', (data) => {
+        const parsedData = JSON.parse(data);
+        res.status(500).json({ message: parsedData.data });
+      });
+    }
   } catch (err: any) {
     logger.error(`Error in getting search results: ${err.message}`);
     res.status(500).json({ message: 'An error has occurred.' });

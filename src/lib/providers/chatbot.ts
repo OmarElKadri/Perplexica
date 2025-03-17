@@ -14,6 +14,7 @@ export const loadChatbotChatModels = async () => {
         model: new ChatOpenAI({
           modelName: 'chatbot',
           temperature: 0.2,
+          streaming: true,
           configuration: {
             baseURL: chatbotApiUrl,
             defaultHeaders: {
