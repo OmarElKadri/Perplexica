@@ -22,6 +22,19 @@ export const loadGroqChatModels = async () => {
           },
         ),
       },
+      'deepseek-r1-distill-llama-70b': {
+        displayName: 'DeepSeek R1 Distill 70B',
+        model: new ChatOpenAI(
+          {
+            openAIApiKey: groqApiKey,
+            modelName: 'deepseek-r1-distill-llama-70b',
+            temperature: 0.7, 
+          },
+          {
+            baseURL: 'https://api.groq.com/openai/v1',
+          },
+        ),
+      },
       'llama-3.2-3b-preview': {
         displayName: 'Llama 3.2 3B',
         model: new ChatOpenAI(

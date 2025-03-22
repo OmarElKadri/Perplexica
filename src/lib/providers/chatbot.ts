@@ -12,7 +12,7 @@ export const loadChatbotChatModels = async () => {
       'chatbot': {
         displayName: 'Custom Chatbot',
         model: new ChatOpenAI({
-          modelName: 'chatbot',
+          modelName: 'deepseek-r1-distill-llama-70b',
           temperature: 0.2,
           streaming: true,
           configuration: {
@@ -23,6 +23,9 @@ export const loadChatbotChatModels = async () => {
           },
           // No API key needed since it's an open endpoint
           openAIApiKey: 'not-needed',
+          modelKwargs: {
+            model_name: 'gpt-3.5-turbo' // Use a known model for token counting
+          },
         }),
       },
     };
